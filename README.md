@@ -95,8 +95,3 @@ Unexpected Cases/Difficulties.
 
 Although we have lots of flights, most of them are repetitive. For a set of flights between two airports, the shortest one will be the one that represents the path and is always picked to find the shortest path. In this case It’s  redundant to search for a longer path.  We can achieve better running time if we can trim cases like this. We didn’t expect there to be a time dependency between flights. After we pick a certain flight with an arrival time, edges from the destination with start time earlier should be invalidated, and the difference between end of last flight and start of next flight should be considered as part of the weight too.
 
-Task separation and responsibilities:
-Jinyang Yao: Algorithm implementation
-Jace Lai: Unexpected Cases and task separation
-Lucas Pozza: Dataset implementation
-Tatiana Urazova: Results analysis and testing
