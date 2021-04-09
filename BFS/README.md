@@ -1,4 +1,4 @@
-Dataset. (Lucas) 
+Dataset.
 
 The data set used is from <https://www.kaggle.com/usdot/flight-delays> which includes various information regarding US domestic flights. Our code parses the CSV file provided into an array that contains the information required for each flight. This array is then used to build the  graph where each vertex represents an airport and each directed edge a flight. For our testing purposes we use the ORIGIN_AIRPORT and DESTINATION_AIRPORT columns of the dataset which provide a unique IATA code for the origin and destination airports of each flight. The AIR_TIME column gives us the total duration of the flight, and by subtracting AIR_TIME from ELAPSED_TIME (total flight time including airport delays) we get the waiting time at each connecting airport. All times are given in minutes. Our dataset does not include pricing information, as prices fluctuate depending on time, so for testing purposes we are calculating a price for each flight as a function of AIR_TIME and some small random value.
 
@@ -17,7 +17,7 @@ public class FlightInfo {
 The array of FlightInfo is then used to create the graph. We use the origin and destination values to join nodes in the graph. The airTime, waitTime and price are used to calculate the weight (cost) of each edge.
 
 
-Implementation (Jinyang Yao). 
+Implementation
 
 We represented flights as edges and airports as vertices of a directed graph, and encoded the graph as an adjacent list with a hashtable. All airports are added before we construct any edges, so we can ensure edges only connect vertices that exist in the graph. Each time we add a new edge, we calculate the cost of each flight, and insert the cost number of dummy nodes between the original and the destination. After all edges are added, we perform a modified dfs search algorithm, instead of collecting visited nodes, we start from the starting node and search for the target node. Each time we visit the adjacent nodes of a node, we set predecessors of adjacent nodes, so we can trace back from the chain of references. If the target node is hit, we call the traceback function, which only collects airport nodes in the chain.
 
@@ -77,7 +77,8 @@ In terms of implementation, there is a lot of room for improvement. Currently af
 
 Matlab code used for the plots:
 
-'P=polyfit(inputSize,runtimes,1);
+```
+P=polyfit(inputSize,runtimes,1);
  
 x=0:1200;
 yfit = P(1)*x+P(2);
@@ -87,15 +88,10 @@ xlabel('|V|+|E|');
 ylabel('Runtime');
 plot(x,yfit,'r-.');
 legend('Runtimes VS (|V|+|E|)',sprintf('%.2f*(|V|+|E|)+(%.2f)',P(1),P(2)));
-'
 hold off
+```
 
 Unexpected Cases/Difficulties. 
 
 Although we have lots of flights, most of them are repetitive. For a set of flights between two airports, the shortest one will be the one that represents the path and is always picked to find the shortest path. In this case It’s  redundant to search for a longer path.  We can achieve better running time if we can trim cases like this. We didn’t expect there to be a time dependency between flights. After we pick a certain flight with an arrival time, edges from the destination with start time earlier should be invalidated, and the difference between end of last flight and start of next flight should be considered as part of the weight too.
 
-Task separation and responsibilities:
-Jinyang Yao: Algorithm implementation
-Jace Lai: Unexpected Cases and task separation
-Lucas Pozza: Dataset implementation
-Tatiana Urazova: Results analysis and testing
