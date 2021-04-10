@@ -1,25 +1,37 @@
 package flightpath320;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
-public class FlightPath {
+class DijkstraTest {
+  //public static void main(String[] args) {
+  //  //test(2000);
+  //  testRealData(500);
+  //}
 
-  public static void main(String[] args) {
-    long[] a = new long[10];
-    for (int n = 100; n <= 1000; n += 100) {
+  public static void test(int iterations) {
+    ArrayList<Long> a1 = new ArrayList<>();
+    ArrayList<Integer> a2 = new ArrayList<>();
+    ArrayList<Integer> a3 = new ArrayList<>();
+
+    for (int n = 1000; n <= iterations; n += 20) {
       System.out.printf("n=%d\n", n);
-      a[(n - 100) / 100] = test(n);
+      Metric metric = testRealData(n);
+      a1.add(metric.timeTaken);
+      a2.add(metric.E);
+      a3.add(metric.V);
     }
-    System.out.println(Arrays.toString(a));
+
+    System.out.println(a1.toString());
+    System.out.println(a2.toString());
+    System.out.println(a3.toString());
   }
 
-  public static long test(int inputSize) {
+  public static Metric testRealData(int inputSize) {
     try {
       ArrayList<FlightInfo> flights = FlightData.loadFlights(inputSize);
       ArrayList<String> airports = FlightData.airportsFromFlights(flights);
       // Graph g = Util.createGraph(airports);
-      Graph g = Util.createGraph(airports);
+      WeightedGraph g = Util.createWeightedGraph(airports);
 
       System.out.println("======================");
 
@@ -28,16 +40,13 @@ public class FlightPath {
         g.addEdge(new Node(info.origin), new Node(info.destination), weight);
       }
 
-      // System.out.println(airports);
-      // System.out.println(flights);
-      // System.out.println(g);
-
-      Node from = new Node("LAS");
-      Node to = new Node("MIA");
+      Node from = new Node("TWF");
+      Node to = new Node("ORD");
 
       long startTime = System.currentTimeMillis();
+      ArrayList<Node> result = (new Dijkstra()).run(g, from, to);
 
-      ArrayList<Node> result = ShortestPathBFS.run(g, from, to);
+      long endTime = System.currentTimeMillis();
 
       if (result == null) {
         String msg = "No connection between ";
@@ -59,39 +68,53 @@ public class FlightPath {
         }
       }
 
-      long endTime = System.currentTimeMillis();
-
       System.out.println(result.toString());
 
-      return (endTime - startTime);
+      Metric metric = new Metric();
+      metric.timeTaken = (endTime - startTime);
+      metric.E = flights.size();
+      metric.V = airports.size();
+
+      return metric;
     } catch (Exception e) {
       e.printStackTrace();
     }
-    return 0;
+    return null;
   }
 
-  public static void test1() {
+  public static void test1(Dijkstra algo) {
     try {
       ArrayList<Node> nodes = new ArrayList<>();
       nodes.add(new Node("a"));
       nodes.add(new Node("b"));
       nodes.add(new Node("c"));
       nodes.add(new Node("d"));
-      Graph g = new Graph(nodes);
+      WeightedGraph g = new WeightedGraph(nodes);
       g.addEdge(new Node("a"), new Node("c"), 3);
       g.addEdge(new Node("b"), new Node("c"), 2);
       g.addEdge(new Node("c"), new Node("d"), 2);
       g.addEdge(new Node("a"), new Node("d"), 4);
 
-      System.out.println(g.toString());
+      System.out.println("Graph is: " + g.toString());
       System.out.println();
 
-      ArrayList<Node> result = ShortestPathBFS.run(g, new Node("a"), new Node("d"));
+      ArrayList<Node> result = algo.run(g, new Node("a"), new Node("d"));
       System.out.println(result);
 
     } catch (Exception e) {
       e.printStackTrace();
     }
+  }
 
+}
+
+class Metric {
+  long timeTaken;
+  int V;
+  int E;
+
+  @Override
+  public String toString() {
+    return "Metric [timeTaken=" + timeTaken + ", V=" + V + ", E=" + E + "]";
   }
 }
